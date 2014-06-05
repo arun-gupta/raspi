@@ -1,0 +1,6 @@
+.nb-configuration.xml
+/camera/nbproject/private/
+/camera/build/
+/camera/dist/
+/camera-webapp/target/
+/camera-rest/target/
