@@ -17,13 +17,13 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 /**
  * @author arungupta
  */
 @WebServlet(urlPatterns = "/ImageConsumerServlet")
 public class ImageConsumerServlet extends HttpServlet {
-
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -44,13 +44,14 @@ public class ImageConsumerServlet extends HttpServlet {
             out.println("</head>");
             out.println("<body>");
             out.println("<h1>Servlet ImageConsumerServlet at " + request.getContextPath() + "</h1>");
-            String endpoint = "http://localhost:8080/camera-rest/webresources/images";
+            String endpoint = "http://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/webresources/images";
             Client client = ClientBuilder.newClient();
+            out.println("Invoking " + endpoint);
             WebTarget target = client.target(endpoint);
 
             try (InputStream is = Files.newInputStream(FileSystems.getDefault().getPath(System.getProperty("user.home"), "Desktop", "wildfly-logo.png"))) {
-                target.request().post(Entity.entity(is, MediaType.APPLICATION_OCTET_STREAM));
-                out.println("Submitted the REST request");
+                Response r = target.request().post(Entity.entity(is, MediaType.APPLICATION_OCTET_STREAM));
+                out.println("<br>Submitted the REST request: " + r.getStatus());
             } catch (IOException ex) {
                 Logger.getLogger(ImageConsumerServlet.class.getName()).log(Level.SEVERE, null, ex);
             }

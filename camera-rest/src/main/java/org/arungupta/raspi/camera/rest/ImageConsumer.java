@@ -2,14 +2,19 @@ package org.arungupta.raspi.camera.rest;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.FileSystems;
 import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.annotation.PostConstruct;
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
-import javax.ws.rs.FormParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
 /**
@@ -20,27 +25,37 @@ import javax.ws.rs.core.MediaType;
 @Path("images")
 public class ImageConsumer {
 
-//    @POST
-//    @Consumes(MediaType.MULTIPART_FORM_DATA)
-//    public void receiveFile(@FormParam("file") InputStream is, @FormParam("name")String name) {
-//        try {
-//            java.nio.file.Path path = FileSystems.getDefault().getPath(System.getProperty("user.home"), "images", name);
-//            Files.copy(is, path);
-//        } catch (IOException ex) {
-//            Logger.getLogger(ImageConsumer.class.getName()).log(Level.SEVERE, null, ex);
-//        }
-//    }
-    
-    @POST
-//    @Consumes(MediaType.APPLICATION_OCTET_STREAM)
-    @Consumes(MediaType.WILDCARD)
-    public void receiveFile(InputStream is) {
-        Logger.getAnonymousLogger().log(Level.INFO, "Received REST request: receiveFile");
+    final DateFormat df = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
+    java.nio.file.Path tempDirectory;
+
+    @Context
+    HttpServletRequest request;
+
+    Logger LOGGER = Logger.getLogger(ImageConsumer.class.getName());
+
+    @PostConstruct
+    public void init() {
         try {
-            java.nio.file.Path path = FileSystems.getDefault().getPath(System.getProperty("user.home"), "Documents");
-            Files.copy(is, path);
+            tempDirectory = Files.createTempDirectory("raspi");
         } catch (IOException ex) {
-            Logger.getLogger(ImageConsumer.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, null, ex);
+        }
+    }
+
+    @POST
+    @Consumes(MediaType.APPLICATION_OCTET_STREAM)
+    public void receiveFile(InputStream is) {
+        String fileName = df.format(Calendar.getInstance().getTime()) + ".jpg";
+
+        LOGGER.log(Level.INFO, "Received REST request: receiveFile");
+        try {
+//            java.nio.file.Path path = Paths.get(tempDirectory.toString(), fileName);
+            java.nio.file.Path path = Paths.get(fileName);
+            LOGGER.log(Level.INFO, "Storing file : {0}", path.toString());
+            Files.copy(is, path);
+            LOGGER.log(Level.INFO, "File copied to path: {0}", request.getServletContext().getRealPath(path.toString()));
+        } catch (IOException ex) {
+            LOGGER.log(Level.SEVERE, null, ex);
         }
     }
 }
