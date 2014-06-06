@@ -28,32 +28,31 @@ public class ImageConsumer {
     final DateFormat df = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
     java.nio.file.Path tempDirectory;
 
-    @Context
-    HttpServletRequest request;
+//    @Context
+//    HttpServletRequest request;
 
-    Logger LOGGER = Logger.getLogger(ImageConsumer.class.getName());
+    static final Logger LOGGER = Logger.getLogger(ImageConsumer.class.getName());
 
-    @PostConstruct
-    public void init() {
-        try {
-            tempDirectory = Files.createTempDirectory("raspi");
-        } catch (IOException ex) {
-            LOGGER.log(Level.SEVERE, null, ex);
-        }
-    }
+//    @PostConstruct
+//    public void init() {
+//        try {
+//            tempDirectory = Files.createTempDirectory("raspi");
+//        } catch (IOException ex) {
+//            LOGGER.log(Level.SEVERE, null, ex);
+//        }
+//    }
 
     @POST
-    @Consumes(MediaType.APPLICATION_OCTET_STREAM)
+    @Consumes(MediaType.WILDCARD)
     public void receiveFile(InputStream is) {
-        String fileName = df.format(Calendar.getInstance().getTime()) + ".jpg";
+        String fileName = df.format(Calendar.getInstance().getTime()) + ".png";
 
         LOGGER.log(Level.INFO, "Received REST request: receiveFile");
         try {
 //            java.nio.file.Path path = Paths.get(tempDirectory.toString(), fileName);
-            java.nio.file.Path path = Paths.get(fileName);
-            LOGGER.log(Level.INFO, "Storing file : {0}", path.toString());
+            java.nio.file.Path path = Paths.get(System.getProperty("user.home"), fileName);
             Files.copy(is, path);
-            LOGGER.log(Level.INFO, "File copied to path: {0}", request.getServletContext().getRealPath(path.toString()));
+            LOGGER.log(Level.INFO, "File copied to path: {0}", path.toString());
         } catch (IOException ex) {
             LOGGER.log(Level.SEVERE, null, ex);
         }
