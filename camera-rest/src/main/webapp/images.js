@@ -1,4 +1,4 @@
-BASE_URL = "http://localhost:8080/camera-rest/webresources/";
+BASE_URL = document.location.href + "webresources/";
 
 onload = function() {
     loadImages();
