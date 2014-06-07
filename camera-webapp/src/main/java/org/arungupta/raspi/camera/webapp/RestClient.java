@@ -1,14 +1,15 @@
 package org.arungupta.raspi.camera.webapp;
 
 import java.io.InputStream;
-import javax.annotation.PostConstruct;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.ejb.Singleton;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedHashMap;
+import javax.ws.rs.core.Response;
 
 /**
  * @author arungupta
@@ -16,20 +17,15 @@ import javax.ws.rs.core.MultivaluedHashMap;
 @Singleton
 public class RestClient {
     
-    WebTarget target;
-    private final static String endpoint = "http://localhost:8080/camera-rest/webresources/images";
+    static final Logger LOGGER = Logger.getLogger(RestClient.class.getName());
+//    private final static String endpoint = "http://localhost:8080/camera-rest/webresources/images";
+    private final static String ENDPOINT = "http://raspi-milestogo.rhcloud.com/webresources/images";
 
-    @PostConstruct
-    public void init() {
+    public void sendFile(InputStream is) {
         Client client = ClientBuilder.newClient();
-        target = client.target(endpoint);
-    }
-    
-    public void sendFile(InputStream is, String name) {
-        target.request().post(Entity.entity(is, MediaType.APPLICATION_OCTET_STREAM));
-//        MultivaluedHashMap<String, String> map = new MultivaluedHashMap<>();
-//        map.add("file", is);
-//        map.add("name", name);
-//        target.request().post(Entity.form(map));
+        WebTarget target = client.target(ENDPOINT);
+        Response response = target.request().post(Entity.entity(is, MediaType.APPLICATION_OCTET_STREAM));
+        LOGGER.log(Level.INFO, "sent InputStream to REST, received: {0}", response.getStatus());
+        client.close();
     }
 }
