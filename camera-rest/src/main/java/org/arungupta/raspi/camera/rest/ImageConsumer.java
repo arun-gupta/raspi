@@ -34,19 +34,7 @@ public class ImageConsumer {
     final DateFormat df = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
     java.nio.file.Path tempDirectory;
 
-//    @Context
-//    HttpServletRequest request;
-
     static final Logger LOGGER = Logger.getLogger(ImageConsumer.class.getName());
-
-//    @PostConstruct
-//    public void init() {
-//        try {
-//            tempDirectory = Files.createTempDirectory("raspi");
-//        } catch (IOException ex) {
-//            LOGGER.log(Level.SEVERE, null, ex);
-//        }
-//    }
 
     // Make sure this directory exists! It will not be created automatically.
     private static final java.nio.file.Path BASE_DIR = Paths.get(System.getProperty("user.home"), "raspi");
@@ -58,7 +46,6 @@ public class ImageConsumer {
 
         LOGGER.log(Level.INFO, "Received REST request: receiveFile");
         try {
-//            java.nio.file.Path path = Paths.get(tempDirectory.toString(), fileName);
             Files.copy(is, BASE_DIR.resolve(fileName));
             LOGGER.log(Level.INFO, "File copied to path: {0}", BASE_DIR.resolve(fileName).toString());
         } catch (IOException ex) {
