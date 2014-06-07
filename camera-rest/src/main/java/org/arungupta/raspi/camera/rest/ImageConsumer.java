@@ -37,12 +37,12 @@ public class ImageConsumer {
     static final Logger LOGGER = Logger.getLogger(ImageConsumer.class.getName());
 
     // Make sure this directory exists! It will not be created automatically.
-    private static final java.nio.file.Path BASE_DIR = Paths.get(System.getProperty("user.home"), "raspi");
+    private static final java.nio.file.Path BASE_DIR = Paths.get(System.getProperty("user.home"), "app-root", "data", "raspi");
     
     @POST
     @Consumes(MediaType.WILDCARD)
     public void receiveFile(InputStream is) {
-        String fileName = df.format(Calendar.getInstance().getTime()) + ".png";
+        String fileName = df.format(Calendar.getInstance().getTime()) + ".jpg";
 
         LOGGER.log(Level.INFO, "Received REST request: receiveFile");
         try {
