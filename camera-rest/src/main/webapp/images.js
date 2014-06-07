@@ -1,9 +1,30 @@
-var output = document.getElementById("output");
-//Check for the various File API support.
-if (window.File && window.FileReader && window.FileList && window.Blob) {
-  // Great success! All the File APIs are supported.
-} else {
-  alert('The File APIs are not fully supported in this browser.');
+BASE_URL = "http://localhost:8080/camera-rest/webresources/";
+
+onload = function() {
+    loadImages();
+    setInterval(loadImages, 3000);
+};
+
+function loadImages() {
+    $("#images").empty();
+    var request = new XMLHttpRequest();
+    request.open("GET", BASE_URL + "images");
+    request.onload = function() {
+        if (request.status === 200) {
+            var results = JSON.parse(request.responseText);
+            for (var i = 0; i < results.length; i++) {
+                loadImage(results[i]);
+            }
+        } else {
+            console.log("Cannot load images: " + request.status + " - " + request.responseText);
+        }
+    };
+    request.send(null);
 }
 
-output.innerHTML += message + "<br>";
+function loadImage(imageName) {
+    var p = $("<p>");
+    var img = $("<img>").attr("src", BASE_URL + "images/" + imageName).attr("alt", imageName);
+    p.append(img);
+    $("#images").append(p);
+}

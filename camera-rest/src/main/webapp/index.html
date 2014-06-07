@@ -1,18 +1,16 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
     <head>
         <title>Raspimage</title>
-        <meta http-equiv="refresh" content="30">
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta charset="UTF-8">
     </head>
     <body>
         <h1>Raspimage!</h1>
-
-        <div id="output"></div>
+        <div id="images">
+            <!-- Will be reloaded every 3 seconds by images.js -->
+        </div>
         
-        <script language="javascript" type="text/javascript" src="images.js">
-
-        </script>
-
+        <script src="http://code.jquery.com/jquery.js"></script>
+        <script src="images.js"></script>
     </body>
 </html>
