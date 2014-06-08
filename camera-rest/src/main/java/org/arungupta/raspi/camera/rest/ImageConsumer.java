@@ -61,6 +61,11 @@ public class ImageConsumer {
         
         // Generate a 150x150 thumbnail.
         BufferedImage image = ImageIO.read(is);
+        if (null == image) {
+            LOGGER.log(Level.SEVERE, "{0} could not be read as BufferedImage, getting null", BASE_DIR.resolve(fileName).toString());
+            Files.copy(BASE_DIR.resolve(fileName), THUMB_DIR.resolve(fileName));
+            return;
+        }
         BufferedImage scaledImage = new BufferedImage(150, 150, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g = scaledImage.createGraphics();
         g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
