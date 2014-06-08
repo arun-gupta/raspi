@@ -1,15 +1,21 @@
 package org.arungupta.raspi.camera.rest;
 
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.imageio.ImageIO;
 import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonArrayBuilder;
@@ -50,10 +56,11 @@ public class ImageConsumer {
 
     // Make sure this directory exists! It will not be created automatically.
     private static final java.nio.file.Path BASE_DIR = Paths.get(System.getProperty("user.home"), "raspi");
+    private static final java.nio.file.Path THUMB_DIR = Paths.get(System.getProperty("user.home"), "raspi-thumbs");
     
     @POST
     @Consumes(MediaType.WILDCARD)
-    public void receiveFile(InputStream is) {
+    public void receiveFile(InputStream is) throws IOException {
         String fileName = df.format(Calendar.getInstance().getTime()) + ".png";
 
         LOGGER.log(Level.INFO, "Received REST request: receiveFile");
@@ -64,6 +71,16 @@ public class ImageConsumer {
         } catch (IOException ex) {
             LOGGER.log(Level.SEVERE, null, ex);
         }
+        
+        // Generate a 150x150 thumbnail.
+        BufferedImage image = ImageIO.read(is);
+        BufferedImage scaledImage = new BufferedImage(150, 150, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g = scaledImage.createGraphics();
+        g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+        g.drawImage(image, 0, 0, 150, 150, 0, 0, image.getWidth(), image.getHeight(), null);
+        g.dispose();
+        OutputStream out = Files.newOutputStream(THUMB_DIR.resolve(fileName), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+        ImageIO.write(scaledImage, "png", out);
     }
     
     /*
@@ -99,6 +116,24 @@ public class ImageConsumer {
         
         fileName += ".png";
         java.nio.file.Path dest = BASE_DIR.resolve(fileName);
+        
+        if (!Files.exists(dest)) {
+            throw new WebApplicationException(Response.Status.NOT_FOUND);
+        }
+        
+        return Files.newInputStream(dest);
+    }
+    
+    /*
+     * Download a thumbnail.
+     */
+    @GET
+    @Path("thumbs/{name}.png")
+    @Produces("image/png")
+    public InputStream getThumbnail(@PathParam("name") String fileName) throws IOException {
+        
+        fileName += ".png";
+        java.nio.file.Path dest = THUMB_DIR.resolve(fileName);
         
         if (!Files.exists(dest)) {
             throw new WebApplicationException(Response.Status.NOT_FOUND);

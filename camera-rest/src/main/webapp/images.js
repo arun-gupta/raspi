@@ -31,8 +31,7 @@ function loadImage(image) {
     }
     
     var a = $("<a>").attr("href", BASE_URL + "images/" + image);
-    var img = $("<img>").attr("src", BASE_URL + "images/" + image).attr("alt", image)
-            .attr("width", "200").attr("height", "180");
+    var img = $("<img>").attr("src", BASE_URL + "images/thumbs/" + image).attr("alt", image);
     a.append(img);
     $("#images").prepend(a);
     displayedImages.push(image);
