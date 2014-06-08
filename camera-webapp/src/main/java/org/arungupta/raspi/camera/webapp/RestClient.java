@@ -18,7 +18,7 @@ import javax.ws.rs.core.Response;
 public class RestClient {
     
     static final Logger LOGGER = Logger.getLogger(RestClient.class.getName());
-//    private final static String endpoint = "http://localhost:8080/camera-rest/webresources/images";
+//    private final static String ENDPOINT = "http://localhost:8080/camera-rest/webresources/images";
     private final static String ENDPOINT = "http://raspi-milestogo.rhcloud.com/webresources/images";
 
     public void sendFile(InputStream is) {

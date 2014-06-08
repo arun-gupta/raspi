@@ -24,11 +24,11 @@ public class CameraBean {
     @Inject RestClient restClient;
     final DateFormat df = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
 
-    @Schedule(hour = "*", minute = "*", second = "*/10")
+    @Schedule(hour = "*", minute = "*", second = "*/30")
     public void takePicture() {
         try {
             String fileName = df.format(Calendar.getInstance().getTime());
-            camera.takePicture2(fileName, ".");
+            camera.takePicture(fileName, ".");
             Path path = Paths.get(".", fileName + ".jpg");
             LOGGER.log(Level.INFO, "path: {0}", path.toString());
             restClient.sendFile(Files.newInputStream(path));
