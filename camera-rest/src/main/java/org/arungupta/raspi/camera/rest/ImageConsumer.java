@@ -37,7 +37,7 @@ public class ImageConsumer {
     static final Logger LOGGER = Logger.getLogger(ImageConsumer.class.getName());
 
     // Make sure this directory exists! It will not be created automatically.
-    private static final java.nio.file.Path BASE_DIR = Paths.get(System.getProperty("user.home"), "app-root", "data", "raspi");
+    private static final java.nio.file.Path BASE_DIR = Paths.get(System.getProperty("user.home"), "raspi");
     
     @POST
     @Consumes(MediaType.WILDCARD)
@@ -80,11 +80,11 @@ public class ImageConsumer {
      * Download an image file.
      */
     @GET
-    @Path("{name}.png")
-    @Produces("image/png")
+    @Path("{name}.jpg")
+    @Produces("image/jpg")
     public InputStream getImage(@PathParam("name") String fileName) throws IOException {
         
-        fileName += ".png";
+        fileName += ".jpg";
         java.nio.file.Path dest = BASE_DIR.resolve(fileName);
         
         if (!Files.exists(dest)) {
