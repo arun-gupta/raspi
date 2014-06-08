@@ -64,7 +64,7 @@ public class ImageConsumer {
         DirectoryStream.Filter<java.nio.file.Path> filter = new DirectoryStream.Filter<java.nio.file.Path>() {
             @Override
             public boolean accept(java.nio.file.Path entry) throws IOException {
-                return entry.getFileName().toString().endsWith("png");
+                return entry.getFileName().toString().endsWith("jpg");
             }
         };
         
